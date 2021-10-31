@@ -17,7 +17,10 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("handleRoot called")
 
-	res, err := exec.Command("./route", "高崎", "前橋").Output()
+	from := r.FormValue("from")
+	to := r.FormValue("to")
+
+	res, err := exec.Command("./route", from, to).Output()
 	if err != nil {
 		log.Fatalln(err)
 	}
