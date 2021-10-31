@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os/exec"
+	"strings"
 )
 
 func handleRoot(w http.ResponseWriter, r *http.Request) {
@@ -20,7 +21,10 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	
+
+	str := string(res)
+	strSlice := strings.Split(str, "\n")
+
 	/*iostr := strings.NewReader(string(res)) //Windowsでは日本語にShiftJISが使用されているため、変換する
 	rio := transform.NewReader(iostr, japanese.ShiftJIS.NewDecoder())
 	str, err := ioutil.ReadAll(rio)
@@ -28,8 +32,12 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln(err)
 	}*/
 
-	if _, err := fmt.Fprintf(w, string(res)); err != nil {
-		log.Fatalln(err)
+	for _, str := range strSlice {
+		str = str + "\n"
+		_, err := fmt.Fprintf(w, str)
+		if err != nil {
+			log.Fatalln(err)
+		}
 	}
 }
 
