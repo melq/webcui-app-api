@@ -3,13 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/gorilla/mux"
-	"golang.org/x/text/encoding/japanese"
-	"golang.org/x/text/transform"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os/exec"
-	"strings"
 )
 
 func handleRoot(w http.ResponseWriter, r *http.Request) {
@@ -24,14 +20,15 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	iostr := strings.NewReader(string(res))
+	
+	/*iostr := strings.NewReader(string(res)) //Windowsでは日本語にShiftJISが使用されているため、変換する
 	rio := transform.NewReader(iostr, japanese.ShiftJIS.NewDecoder())
 	str, err := ioutil.ReadAll(rio)
 	if err != nil {
 		log.Fatalln(err)
-	}
+	}*/
 
-	if _, err := fmt.Fprintf(w, string(str)); err != nil {
+	if _, err := fmt.Fprintf(w, string(res)); err != nil {
 		log.Fatalln(err)
 	}
 }
