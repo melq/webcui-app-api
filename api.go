@@ -36,7 +36,7 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 	}*/
 
 	for _, str := range strSlice {
-		str = str + "\n"
+		str = str + "<br>"
 		_, err := fmt.Fprintf(w, str)
 		if err != nil {
 			log.Fatalln(err)
