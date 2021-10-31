@@ -20,7 +20,7 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("handleRoot called")
 
-	res, err := exec.Command("ipconfig").Output()
+	res, err := exec.Command("./route", "高崎", "前橋").Output()
 	if err != nil {
 		log.Fatalln(err)
 	}
