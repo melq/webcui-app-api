@@ -17,10 +17,31 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("handleRoot called")
 
-	from := r.FormValue("from")
-	to := r.FormValue("to")
+	_, err := fmt.Fprintf(w, "Welcome to start-zoom-cui!!")
+	if err != nil {
+		log.Fatalln(err)
+	}
+}
 
-	res, err := exec.Command("./route", from, to).Output()
+func handleCallCUI(w http.ResponseWriter, r *http.Request) {
+	log.Println("handleCallCUI called")
+
+	user := r.FormValue("user")
+	option := r.FormValue("option")
+	name := r.FormValue("name")
+	url := r.FormValue("url")
+	weekly := r.FormValue("weekly")
+	day := r.FormValue("day")
+	year := r.FormValue("year")
+	date := r.FormValue("date")
+	shour := r.FormValue("shour")
+	sminute := r.FormValue("sminute")
+	ehour := r.FormValue("ehour")
+	eminute := r.FormValue("eminute")
+
+
+
+	res, err := exec.Command("./start-zoom-cui", ).Output()
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -47,7 +68,8 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/", handleRoot)
+	r.HandleFunc("/cui", handleCallCUI)
 
 	fmt.Println("Listen..")
-	log.Fatal(http.ListenAndServe(":8080", r))
+	log.Fatal("ListenAndServe", http.ListenAndServe(":8080", r))
 }
