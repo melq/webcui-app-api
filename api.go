@@ -11,12 +11,11 @@ import (
 )
 
 func handleRoot(w http.ResponseWriter, r *http.Request) {
+	log.Println("handleRoot called")
 	w.Header().Set("Access-Control-Allow-Headers", "*")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 	w.Header().Set("Content-Type", "text/plain; charset=UTF-8")
-
-	log.Println("handleRoot called")
 
 	_, err := fmt.Fprintf(w, "Welcome to start-zoom-cui!!")
 	if err != nil {
@@ -26,6 +25,10 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 
 func handleCallCUI(w http.ResponseWriter, r *http.Request) {
 	log.Println("handleCallCUI called")
+	w.Header().Set("Access-Control-Allow-Headers", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+	w.Header().Set("Content-Type", "text/plain; charset=UTF-8")
 
 	user := r.FormValue("user")
 	option := r.FormValue("option")
