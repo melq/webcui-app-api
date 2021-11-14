@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os/exec"
+	"regexp"
 	"strings"
 )
 
@@ -39,9 +40,34 @@ func handleCallCUI(w http.ResponseWriter, r *http.Request) {
 	ehour := r.FormValue("ehour")
 	eminute := r.FormValue("eminute")
 
+	arg := "-u " + user
 
+	switch option {
+	case "register": arg += " -r"
+	case "start": arg += " -s"
+	case "make":
+		stime := fmt.Sprintf("%s%s00", shour, sminute)
+		etime := fmt.Sprintf("%s%s00", ehour, eminute)
+		arg += fmt.Sprintf(" -m --name %s --url %s --stime %s --etime %s", name, url, stime, etime)
+		if weekly == "true" {
+			arg += fmt.Sprintf(" --weekly --day %s", day)
+		} else {
+			arg += fmt.Sprintf(" --date %s%s", year, date)
+		}
+	case "list": arg += " -l"
+	case "edit":
+		stime := fmt.Sprintf("%s%s00", shour, sminute)
+		etime := fmt.Sprintf("%s%s00", ehour, eminute)
+		arg += fmt.Sprintf(" -e --name %s --url %s --stime %s --etime %s", name, url, stime, etime)
+		if weekly == "true" {
+			arg += fmt.Sprintf(" --weekly --day %s", day)
+		} else {
+			arg += fmt.Sprintf(" --date %s%s", year, date)
+		}
+	case "delete": arg += fmt.Sprintf(" -d --name %s", name)
+	}
 
-	res, err := exec.Command("./start-zoom-cui", ).Output()
+	res, err := exec.Command("./start-zoom-cui", arg).Output()
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -56,8 +82,12 @@ func handleCallCUI(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln(err)
 	}*/
 
+	reg := regexp.MustCompile(`https?://[\w/:%#$&?()~.=+\-]+$`)
 	for _, str := range strSlice {
-		str = str + "<br>"
+		if reg.Match([]byte(str)) {
+			str = fmt.Sprintf("<a href=\"%s\">%s</a>", str, str)
+		}
+		str += "<br>"
 		_, err := fmt.Fprintf(w, str)
 		if err != nil {
 			log.Fatalln(err)
