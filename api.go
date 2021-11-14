@@ -67,7 +67,8 @@ func handleCallCUI(w http.ResponseWriter, r *http.Request) {
 	case "delete": arg += fmt.Sprintf(" -d --name %s", name)
 	}
 
-	res, err := exec.Command("./start-zoom-cui", arg).Output()
+	argSlice := strings.Split(arg, " ")
+	res, err := exec.Command("./start-zoom-cui", argSlice...).Output()
 	if err != nil {
 		log.Fatalln(err)
 	}
