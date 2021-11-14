@@ -30,6 +30,11 @@ func handleCallCUI(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 	w.Header().Set("Content-Type", "text/plain; charset=UTF-8")
 
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
 	user := r.FormValue("user")
 	option := r.FormValue("option")
 	name := r.FormValue("name")
