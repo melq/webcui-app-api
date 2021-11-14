@@ -40,7 +40,7 @@ func handleCallCUI(w http.ResponseWriter, r *http.Request) {
 	ehour := r.FormValue("ehour")
 	eminute := r.FormValue("eminute")
 
-	arg := "-u " + user
+	arg := fmt.Sprintf(" -u %s", user)
 
 	switch option {
 	case "register": arg += " -r"
