@@ -11,29 +11,11 @@ import (
 )
 
 func handleRoot(w http.ResponseWriter, r *http.Request) {
-	log.Println("handleRoot called")
-	w.Header().Set("Access-Control-Allow-Headers", "*")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-	w.Header().Set("Content-Type", "text/plain; charset=UTF-8")
-
-	_, err := fmt.Fprintf(w, "Welcome to start-zoom-cui!!")
-	if err != nil {
-		log.Fatalln(err)
-	}
-}
-
-func handleCallCUI(w http.ResponseWriter, r *http.Request) {
 	log.Println("handleCallCUI called")
 	w.Header().Set("Access-Control-Allow-Headers", "*")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 	w.Header().Set("Content-Type", "text/plain; charset=UTF-8")
-
-	if r.Method == "OPTIONS" {
-		w.WriteHeader(http.StatusOK)
-		return
-	}
 
 	user := r.FormValue("user")
 	option := r.FormValue("option")
@@ -84,13 +66,6 @@ func handleCallCUI(w http.ResponseWriter, r *http.Request) {
 	str := string(res)
 	strSlice := strings.Split(str, "\n")
 
-	/*iostr := strings.NewReader(string(res)) //Windowsでは日本語にShiftJISが使用されているため、変換する
-	rio := transform.NewReader(iostr, japanese.ShiftJIS.NewDecoder())
-	str, err := ioutil.ReadAll(rio)
-	if err != nil {
-		log.Fatalln(err)
-	}*/
-
 	reg := regexp.MustCompile(`https?://[\w/:%#$&?()~.=+\-]+$`)
 	for _, str := range strSlice {
 		if reg.Match([]byte(str)) {
@@ -107,7 +82,6 @@ func handleCallCUI(w http.ResponseWriter, r *http.Request) {
 func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/", handleRoot)
-	r.HandleFunc("/cui", handleCallCUI)
 
 	fmt.Println("Listen..")
 	log.Fatal("ListenAndServe", http.ListenAndServe(":8080", r))
