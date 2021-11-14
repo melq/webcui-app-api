@@ -11,7 +11,7 @@ import (
 )
 
 func handleRoot(w http.ResponseWriter, r *http.Request) {
-	log.Println("handleCallCUI called")
+	log.Println("handleRoot called")
 	w.Header().Set("Access-Control-Allow-Headers", "*")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
@@ -60,7 +60,7 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 	argSlice := strings.Split(arg, " ")
 	res, err := exec.Command("./start-zoom-cui", argSlice...).Output()
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
 	}
 
 	str := string(res)
@@ -74,7 +74,7 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 		str += "<br>"
 		_, err := fmt.Fprintf(w, str)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
 		}
 	}
 }
