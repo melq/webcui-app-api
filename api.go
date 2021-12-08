@@ -7,23 +7,22 @@ import (
 	"log"
 	"net/http"
 	"os/exec"
-	"regexp"
 	"strings"
 )
 
 type Params struct {
-	User 	string `webcui:"user"`
-	Option 	string `webcui:"option"`
-	Name 	string `webcui:"name"`
-	Url 	string `webcui:"url"`
-	Weekly 	string `webcui:"weekly"`
-	Day 	string `webcui:"day"`
-	Year 	string `webcui:"year"`
-	Date 	string `webcui:"date"`
-	Shour 	string `webcui:"shour"`
-	Sminute	string `webcui:"sminute"`
-	Ehour 	string `webcui:"ehour"`
-	Eminute	string `webcui:"eminute"`
+	User    string `webcui:"user"`
+	Option  string `webcui:"option"`
+	Name    string `webcui:"name"`
+	Url     string `webcui:"url"`
+	Weekly  string `webcui:"weekly"`
+	Day     string `webcui:"day"`
+	Year    string `webcui:"year"`
+	Date    string `webcui:"date"`
+	Shour   string `webcui:"shour"`
+	Sminute string `webcui:"sminute"`
+	Ehour   string `webcui:"ehour"`
+	Eminute string `webcui:"eminute"`
 }
 
 func handleRoot(w http.ResponseWriter, r *http.Request) {
@@ -33,14 +32,19 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 	w.Header().Set("Content-Type", "text/plain; charset=UTF-8")
 
-	p := webcui.MapPosts(Params{}, r).(Params)
+	p := Params{}
+	err := webcui.MapPosts(&p, r)
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	arg := fmt.Sprintf(" -u %s", p.User)
-	fmt.Println(arg)
 
 	switch p.Option {
-	case "register": arg += " -r"
-	case "start": arg += " -s"
+	case "register":
+		arg += " -r"
+	case "start":
+		arg += " -s"
 	case "make":
 		stime := fmt.Sprintf("%s%s00", p.Shour, p.Sminute)
 		etime := fmt.Sprintf("%s%s00", p.Ehour, p.Eminute)
@@ -50,7 +54,8 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 		} else {
 			arg += fmt.Sprintf(" --date %s%s", p.Year, p.Date)
 		}
-	case "list": arg += " -l"
+	case "list":
+		arg += " -l"
 	case "edit":
 		stime := fmt.Sprintf("%s%s00", p.Shour, p.Sminute)
 		etime := fmt.Sprintf("%s%s00", p.Ehour, p.Eminute)
@@ -60,7 +65,8 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 		} else {
 			arg += fmt.Sprintf(" --date %s%s", p.Year, p.Date)
 		}
-	case "delete": arg += fmt.Sprintf(" -d --name %s", p.Name)
+	case "delete":
+		arg += fmt.Sprintf(" -d --name %s", p.Name)
 	}
 
 	argSlice := strings.Split(arg, " ")
@@ -69,20 +75,7 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 
-	str := string(res)
-	strSlice := strings.Split(str, "\n")
-
-	reg := regexp.MustCompile(`https?://[\w/:%#$&?()~.=+\-]+$`)
-	for _, str := range strSlice {
-		if reg.Match([]byte(str)) {
-			str = fmt.Sprintf("<a href=\"%s\">%s</a>", str, str)
-		}
-		str += "<br>"
-		_, err := fmt.Fprintf(w, str)
-		if err != nil {
-			log.Println(err)
-		}
-	}
+	webcui.FmtAndWrite(res, w)
 }
 
 func main() {
