@@ -6,8 +6,6 @@ import (
 	"github.com/melq/webcui-api"
 	"log"
 	"net/http"
-	"os/exec"
-	"strings"
 )
 
 type Params struct {
@@ -38,39 +36,38 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln(err)
 	}
 
-	arg := fmt.Sprintf(" -u %s", p.User)
+	cmd := fmt.Sprintf("./start-zoom-cui -u %s", p.User)
 
 	switch p.Option {
 	case "register":
-		arg += " -r"
+		cmd += " -r"
 	case "start":
-		arg += " -s"
+		cmd += " -s"
 	case "make":
 		stime := fmt.Sprintf("%s%s00", p.Shour, p.Sminute)
 		etime := fmt.Sprintf("%s%s00", p.Ehour, p.Eminute)
-		arg += fmt.Sprintf(" -m --name %s --url %s --stime %s --etime %s", p.Name, p.Url, stime, etime)
+		cmd += fmt.Sprintf(" -m --name %s --url %s --stime %s --etime %s", p.Name, p.Url, stime, etime)
 		if p.Weekly == "true" {
-			arg += fmt.Sprintf(" --weekly --day %s", p.Day)
+			cmd += fmt.Sprintf(" --weekly --day %s", p.Day)
 		} else {
-			arg += fmt.Sprintf(" --date %s%s", p.Year, p.Date)
+			cmd += fmt.Sprintf(" --date %s%s", p.Year, p.Date)
 		}
 	case "list":
-		arg += " -l"
+		cmd += " -l"
 	case "edit":
 		stime := fmt.Sprintf("%s%s00", p.Shour, p.Sminute)
 		etime := fmt.Sprintf("%s%s00", p.Ehour, p.Eminute)
-		arg += fmt.Sprintf(" -e --name %s --url %s --stime %s --etime %s", p.Name, p.Url, stime, etime)
+		cmd += fmt.Sprintf(" -e --name %s --url %s --stime %s --etime %s", p.Name, p.Url, stime, etime)
 		if p.Weekly == "true" {
-			arg += fmt.Sprintf(" --weekly --day %s", p.Day)
+			cmd += fmt.Sprintf(" --weekly --day %s", p.Day)
 		} else {
-			arg += fmt.Sprintf(" --date %s%s", p.Year, p.Date)
+			cmd += fmt.Sprintf(" --date %s%s", p.Year, p.Date)
 		}
 	case "delete":
-		arg += fmt.Sprintf(" -d --name %s", p.Name)
+		cmd += fmt.Sprintf(" -d --name %s", p.Name)
 	}
 
-	argSlice := strings.Split(arg, " ")
-	res, err := exec.Command("./start-zoom-cui", argSlice...).Output()
+	res, err := webcui.ExecCommand(cmd)
 	if err != nil {
 		log.Println(err)
 	}
