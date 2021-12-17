@@ -31,8 +31,24 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln(err)
 	}
 
-	//base := "./lcii/API"
-	cmd := fmt.Sprintf("")
+	base := "./lcii/API"
+	var option string
+	if p.IsUntyped == "true" {
+		option := "-u"
+	} else {
+		option := ""
+	}
+
+	cmd := fmt.Sprintf("%s", base)
+
+	switch p.Mode {
+	case "init":
+		cmd += fmt.Sprintf(" init %s %s %s %s", option, p.Xi, p.Ga, p.Term)
+	case "red":
+		cmd += fmt.Sprintf(" red %s %s %s %s %s", option, p.Xi, p.Ga, p.NewTerm, p.Num)
+	case "check":
+		cmd += fmt.Sprintf(" check %s %s %s", p.Xi, p.Ga, p.Term)
+	}
 
 	res, err := webcui.ExecCommand(cmd)
 	if err != nil {
