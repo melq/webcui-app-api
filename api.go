@@ -9,18 +9,13 @@ import (
 )
 
 type Params struct {
-	User    string `webcui:"user"`
-	Option  string `webcui:"option"`
-	Name    string `webcui:"name"`
-	Url     string `webcui:"url"`
-	Weekly  string `webcui:"weekly"`
-	Day     string `webcui:"day"`
-	Year    string `webcui:"year"`
-	Date    string `webcui:"date"`
-	Shour   string `webcui:"shour"`
-	Sminute string `webcui:"sminute"`
-	Ehour   string `webcui:"ehour"`
-	Eminute string `webcui:"eminute"`
+	Xi        string `webcui:"xi"`
+	Ga        string `webcui:"ga"`
+	Term      string `webcui:"term"`
+	NewTerm   string `webcui:"newTerm"`
+	IsUntyped string `webcui:"isUntyped"`
+	Mode      string `webcui:"mode"`
+	Num       string `webcui:"num"`
 }
 
 func handleRoot(w http.ResponseWriter, r *http.Request) {
@@ -36,36 +31,8 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln(err)
 	}
 
-	cmd := fmt.Sprintf("./start-zoom-cui -u %s", p.User)
-
-	switch p.Option {
-	case "register":
-		cmd += " -r"
-	case "start":
-		cmd += " -s"
-	case "make":
-		stime := fmt.Sprintf("%s%s00", p.Shour, p.Sminute)
-		etime := fmt.Sprintf("%s%s00", p.Ehour, p.Eminute)
-		cmd += fmt.Sprintf(" -m --name %s --url %s --stime %s --etime %s", p.Name, p.Url, stime, etime)
-		if p.Weekly == "true" {
-			cmd += fmt.Sprintf(" --weekly --day %s", p.Day)
-		} else {
-			cmd += fmt.Sprintf(" --date %s%s", p.Year, p.Date)
-		}
-	case "list":
-		cmd += " -l"
-	case "edit":
-		stime := fmt.Sprintf("%s%s00", p.Shour, p.Sminute)
-		etime := fmt.Sprintf("%s%s00", p.Ehour, p.Eminute)
-		cmd += fmt.Sprintf(" -e --name %s --url %s --stime %s --etime %s", p.Name, p.Url, stime, etime)
-		if p.Weekly == "true" {
-			cmd += fmt.Sprintf(" --weekly --day %s", p.Day)
-		} else {
-			cmd += fmt.Sprintf(" --date %s%s", p.Year, p.Date)
-		}
-	case "delete":
-		cmd += fmt.Sprintf(" -d --name %s", p.Name)
-	}
+	//base := "./lcii/API"
+	cmd := fmt.Sprintf("")
 
 	res, err := webcui.ExecCommand(cmd)
 	if err != nil {
