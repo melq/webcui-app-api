@@ -35,7 +35,7 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 	p.NewTerm = fmt.Sprintf("\"%s\"", p.NewTerm)
 	p.Num = fmt.Sprintf("\"%s\"", p.Num)
 
-	base := "/var/www/html/lcii/lcii/API"
+	base := "/var/www/html/webcui/lcii/api/lcii/API"
 	option := ""
 	if p.IsUntyped == "true" {
 		option = "-u"
