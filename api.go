@@ -2,25 +2,19 @@ package main
 
 import (
 	"fmt"
-	"github.com/gorilla/mux"
 	"github.com/melq/webcui-api"
 	"log"
 	"net/http"
 )
 
 type Params struct {
-	User    string `webcui:"user"`
-	Option  string `webcui:"option"`
-	Name    string `webcui:"name"`
-	Url     string `webcui:"url"`
-	Weekly  string `webcui:"weekly"`
-	Day     string `webcui:"day"`
-	Year    string `webcui:"year"`
-	Date    string `webcui:"date"`
-	Shour   string `webcui:"shour"`
-	Sminute string `webcui:"sminute"`
-	Ehour   string `webcui:"ehour"`
-	Eminute string `webcui:"eminute"`
+	Xi        string `webcui:"xi"`
+	Ga        string `webcui:"ga"`
+	Term      string `webcui:"term"`
+	NewTerm   string `webcui:"newTerm"`
+	IsUntyped string `webcui:"isUntyped"`
+	Mode      string `webcui:"mode"`
+	Num       string `webcui:"num"`
 }
 
 func handleRoot(w http.ResponseWriter, r *http.Request) {
@@ -35,36 +29,27 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	p.Xi = fmt.Sprintf("\"%s\"", p.Xi)
+	p.Ga = fmt.Sprintf("\"%s\"", p.Ga)
+	p.Term = fmt.Sprintf("\"%s\"", p.Term)
+	p.NewTerm = fmt.Sprintf("\"%s\"", p.NewTerm)
+	p.Num = fmt.Sprintf("\"%s\"", p.Num)
 
-	cmd := fmt.Sprintf("./start-zoom-cui -u %s", p.User)
+	base := "/var/www/html/webcui/lcii/api/lcii/API"
+	option := ""
+	if p.IsUntyped == "true" {
+		option = "-u"
+	}
 
-	switch p.Option {
-	case "register":
-		cmd += " -r"
-	case "start":
-		cmd += " -s"
-	case "make":
-		stime := fmt.Sprintf("%s%s00", p.Shour, p.Sminute)
-		etime := fmt.Sprintf("%s%s00", p.Ehour, p.Eminute)
-		cmd += fmt.Sprintf(" -m --name %s --url %s --stime %s --etime %s", p.Name, p.Url, stime, etime)
-		if p.Weekly == "true" {
-			cmd += fmt.Sprintf(" --weekly --day %s", p.Day)
-		} else {
-			cmd += fmt.Sprintf(" --date %s%s", p.Year, p.Date)
-		}
-	case "list":
-		cmd += " -l"
-	case "edit":
-		stime := fmt.Sprintf("%s%s00", p.Shour, p.Sminute)
-		etime := fmt.Sprintf("%s%s00", p.Ehour, p.Eminute)
-		cmd += fmt.Sprintf(" -e --name %s --url %s --stime %s --etime %s", p.Name, p.Url, stime, etime)
-		if p.Weekly == "true" {
-			cmd += fmt.Sprintf(" --weekly --day %s", p.Day)
-		} else {
-			cmd += fmt.Sprintf(" --date %s%s", p.Year, p.Date)
-		}
-	case "delete":
-		cmd += fmt.Sprintf(" -d --name %s", p.Name)
+	cmd := fmt.Sprintf("%s", base)
+
+	switch p.Mode {
+	case "init":
+		cmd += fmt.Sprintf(" init %s %s %s %s", option, p.Xi, p.Ga, p.Term)
+	case "red":
+		cmd += fmt.Sprintf(" red %s %s %s %s %s", option, p.Xi, p.Ga, p.NewTerm, p.Num)
+	case "check":
+		cmd += fmt.Sprintf(" check %s %s %s", p.Xi, p.Ga, p.Term)
 	}
 
 	res, err := webcui.ExecCommand(cmd)
@@ -76,9 +61,8 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	r := mux.NewRouter()
-	r.HandleFunc("/", handleRoot)
+	http.HandleFunc("/", handleRoot)
 
 	fmt.Println("Listen..")
-	log.Fatal("ListenAndServe", http.ListenAndServe(":8080", r))
+	log.Fatal("ListenAndServe", http.ListenAndServe(":8080", nil))
 }
