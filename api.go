@@ -29,8 +29,13 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	p.Xi = fmt.Sprintf("\"%s\"", p.Xi)
+	p.Ga = fmt.Sprintf("\"%s\"", p.Ga)
+	p.Term = fmt.Sprintf("\"%s\"", p.Term)
+	p.NewTerm = fmt.Sprintf("\"%s\"", p.NewTerm)
+	p.Num = fmt.Sprintf("\"%s\"", p.Num)
 
-	base := "./lcii/API"
+	base := "/var/www/html/lcii/lcii/API"
 	option := ""
 	if p.IsUntyped == "true" {
 		option = "-u"
