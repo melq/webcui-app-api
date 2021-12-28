@@ -8,13 +8,10 @@ import (
 )
 
 type Params struct {
-	Xi        string `webcui:"xi"`
-	Ga        string `webcui:"ga"`
-	Term      string `webcui:"term"`
-	NewTerm   string `webcui:"newTerm"`
-	IsUntyped string `webcui:"isUntyped"`
-	Mode      string `webcui:"mode"`
-	Num       string `webcui:"num"`
+	From   string `webcui:"from"`
+	To     string `webcui:"to"`
+	Hour   string `webcui:"hour"`
+	Minute string `webcui:"minute"`
 }
 
 func handleRoot(w http.ResponseWriter, r *http.Request) {
@@ -29,34 +26,13 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	p.Xi = fmt.Sprintf("\"%s\"", p.Xi)
-	p.Ga = fmt.Sprintf("\"%s\"", p.Ga)
-	p.Term = fmt.Sprintf("\"%s\"", p.Term)
-	p.NewTerm = fmt.Sprintf("\"%s\"", p.NewTerm)
-	p.Num = fmt.Sprintf("\"%s\"", p.Num)
 
-	base := "/var/www/html/webcui/lcii/api/lcii/API"
-	option := ""
-	if p.IsUntyped == "true" {
-		option = "-u"
-	}
-
-	cmd := fmt.Sprintf("%s", base)
-
-	switch p.Mode {
-	case "init":
-		cmd += fmt.Sprintf(" init %s %s %s %s", option, p.Xi, p.Ga, p.Term)
-	case "red":
-		cmd += fmt.Sprintf(" red %s %s %s %s %s", option, p.Xi, p.Ga, p.NewTerm, p.Num)
-	case "check":
-		cmd += fmt.Sprintf(" check %s %s %s", p.Xi, p.Ga, p.Term)
-	}
+	cmd := fmt.Sprintf("./route %s %s %s%s", p.From, p.To, p.Hour, p.Minute)
 
 	res, err := webcui.ExecCommand(cmd)
 	if err != nil {
 		log.Println(err)
 	}
-
 	webcui.FmtAndWrite(res, w)
 }
 
