@@ -1,5 +1,5 @@
-module route_api
+module webcui-app-api
 
-go 1.16
+go 1.17
 
-require github.com/gorilla/mux v1.8.0
+require github.com/melq/webcui-api v0.0.11

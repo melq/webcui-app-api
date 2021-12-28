@@ -2,52 +2,44 @@ package main
 
 import (
 	"fmt"
-	"github.com/gorilla/mux"
+	"github.com/melq/webcui-api"
 	"log"
 	"net/http"
-	"os/exec"
-	"strings"
 )
 
+type Params struct {
+	From   string `webcui:"from"`
+	To     string `webcui:"to"`
+	Hour   string `webcui:"hour"`
+	Minute string `webcui:"minute"`
+}
+
 func handleRoot(w http.ResponseWriter, r *http.Request) {
+	log.Println("handleRoot called")
 	w.Header().Set("Access-Control-Allow-Headers", "*")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 	w.Header().Set("Content-Type", "text/plain; charset=UTF-8")
 
-	log.Println("handleRoot called")
-
-	from := r.FormValue("from")
-	to := r.FormValue("to")
-
-	res, err := exec.Command("./route", from, to).Output()
+	p := Params{}
+	err := webcui.MapPosts(&p, r)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	str := string(res)
-	strSlice := strings.Split(str, "\n")
+	cmd := fmt.Sprintf("./route %s %s %s%s", p.From, p.To, p.Hour, p.Minute)
 
-	/*iostr := strings.NewReader(string(res)) //Windowsでは日本語にShiftJISが使用されているため、変換する
-	rio := transform.NewReader(iostr, japanese.ShiftJIS.NewDecoder())
-	str, err := ioutil.ReadAll(rio)
+	res, err := webcui.ExecCommand(cmd)
 	if err != nil {
-		log.Fatalln(err)
-	}*/
-
-	for _, str := range strSlice {
-		str = str + "<br>"
-		_, err := fmt.Fprintf(w, str)
-		if err != nil {
-			log.Fatalln(err)
-		}
+		log.Println(err)
 	}
+
+	webcui.FmtAndWrite(res, w)
 }
 
 func main() {
-	r := mux.NewRouter()
-	r.HandleFunc("/", handleRoot)
+	http.HandleFunc("/", handleRoot)
 
 	fmt.Println("Listen..")
-	log.Fatal(http.ListenAndServe(":8080", r))
+	log.Fatal("ListenAndServe", http.ListenAndServe(":8080", nil))
 }
