@@ -8,10 +8,7 @@ import (
 )
 
 type Params struct {
-	From   string `webcui:"from"`
-	To     string `webcui:"to"`
-	Hour   string `webcui:"hour"`
-	Minute string `webcui:"minute"`
+	Sample string `webcui:"sample"` // 使用するパラメータに合わせてフィールドを変更する
 }
 
 func handleRoot(w http.ResponseWriter, r *http.Request) {
@@ -27,7 +24,8 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln(err)
 	}
 
-	cmd := fmt.Sprintf("./route %s %s %s%s", p.From, p.To, p.Hour, p.Minute)
+	cmd := fmt.Sprintf("./sample %s", p.Sample) // 実行したいコマンドの形になるように変更する
+	// 複数パターンのコマンドがある場合は、分岐等で文字列を適宜変更する
 
 	res, err := webcui.ExecCommand(cmd)
 	if err != nil {
