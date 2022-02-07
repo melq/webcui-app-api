@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/gorilla/mux"
 	"github.com/melq/webcui-api"
 	"log"
 	"net/http"
@@ -76,9 +75,8 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	r := mux.NewRouter()
-	r.HandleFunc("/", handleRoot)
+	http.HandleFunc("/", handleRoot)
 
 	fmt.Println("Listen..")
-	log.Fatal("ListenAndServe", http.ListenAndServe(":8080", r))
+	log.Fatal("ListenAndServe", http.ListenAndServe(":8080", nil)
 }
