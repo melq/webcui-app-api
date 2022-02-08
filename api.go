@@ -8,11 +8,11 @@ import (
 )
 
 type Params struct {
-	Sample string `webcui:"sample"` // 使用するパラメータに合わせてフィールドを変更する
+	Object string `webcui:"string"`
+	Mode   string `webcui:"mode"`
 }
 
 func handleRoot(w http.ResponseWriter, r *http.Request) {
-	log.Println("handleRoot called")
 	w.Header().Set("Access-Control-Allow-Headers", "*")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
@@ -24,8 +24,14 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln(err)
 	}
 
-	cmd := fmt.Sprintf("./sample %s", p.Sample) // 実行したいコマンドの形になるように変更する
-	// 複数パターンのコマンドがある場合は、分岐等で文字列を適宜変更する
+	var mode string
+	if p.Mode == "number2kanji" {
+		mode = "-k"
+	} else {
+		mode = "-n"
+	}
+
+	cmd := fmt.Sprintf("./n2k -s %s %s", p.Object, mode)
 
 	res, err := webcui.ExecCommand(cmd)
 	if err != nil {
