@@ -8,8 +8,8 @@ import (
 )
 
 type Params struct {
-	Object string `webcui:"string"`
-	Mode   string `webcui:"mode"`
+	Str  string `webcui:"str"`
+	Mode string `webcui:"mode"`
 }
 
 func handleRoot(w http.ResponseWriter, r *http.Request) {
@@ -31,7 +31,7 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 		mode = "-n"
 	}
 
-	cmd := fmt.Sprintf("./n2k -s %s %s", p.Object, mode)
+	cmd := fmt.Sprintf("./n2k -s %s %s", p.Str, mode)
 
 	res, err := webcui.ExecCommand(cmd)
 	if err != nil {
